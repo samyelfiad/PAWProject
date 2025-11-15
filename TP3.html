@@ -145,7 +145,7 @@
             color: #444;
         }
         
-        form input[type="text"] {
+        form input[type="text"], .search-container input[type="text"] {
             width: 100%;
             padding: 12px;
             box-sizing: border-box;
@@ -155,11 +155,28 @@
         }
         
         
-        form input[type="text"]:focus {
+        form input[type="text"]:focus, .search-container input[type="text"]:focus {
             outline: none;
             border-color: #007bff;
             box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
         }
+        
+        .search-container {
+            max-width: 400px;
+            margin-bottom: 15px;
+        }
+        .search-container label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        #sort-status {
+            margin-top: 15px;
+            font-style: italic;
+            color: #555;
+            font-size: 0.9em;
+        }
+
 
         .error-message {
             color: red;
@@ -217,6 +234,12 @@
         #reset-btn:hover { background-color: #5a6268; }
         #report-btn { background-color: #17a2b8; }
         #report-btn:hover { background-color: #138496; }
+
+        #sort-abs-asc { background-color: #ffc107; color: #333; }
+        #sort-abs-asc:hover { background-color: #e0a800; }
+        #sort-part-desc { background-color: #fd7e14; }
+        #sort-part-desc:hover { background-color: #e36a00; }
+
 
         #report-section {
             padding: 20px;
@@ -287,8 +310,13 @@
             </div>
 
             <div id="page-attendance" class="page-content">
-                <h2>Exercice 1: Modify the Attendance Table</h2>
+                <h2>Attendance List</h2>
                 
+                <div class="search-container">
+                    <label for="search-input">Search by Name:</label>
+                    <input type="text" id="search-input" placeholder="Type a name to filter...">
+                </div>
+
                 <table>
                     <thead>
                         <tr>
@@ -380,11 +408,15 @@
                     </tbody>
                 </table>
 
+                <div id="sort-status"></div>
+
                 <div class="button-group">
                     <button onclick="updateAttendance()">Calculer les résultats</button>
-                    <button id="report-btn" onclick="showReport()">Show Report (Ex 4)</button>
-                    <button id="highlight-btn">Highlight Excellent (Ex 6)</button>
-                    <button id="reset-btn">Reset All (Ex 6)</button>
+                    <button id="report-btn" onclick="showReport()">Show Report</button>
+                    <button id="highlight-btn">Highlight Excellent</button>
+                    <button id="reset-btn">Reset All</button>
+                    <button id="sort-abs-asc">Sort by Absences (Ascending)</button>
+                    <button id="sort-part-desc">Sort by Participation (Descending)</button>
                 </div>
 
                 <div id="report-section">
@@ -410,7 +442,7 @@
             </div>
 
             <div id="page-add-student" class="page-content">
-                <h2>Exercice 2 & 3: Add Student Form</h2>
+                <h2>Add New Student</h2>
                 
                 <form id="student-form">
                     <div>
@@ -714,6 +746,53 @@
             });
             
             $('#report-section').css('display', 'none');
+            $('#search-input').val('');
+            $('#student-table-body .student-row').show();
+            $('#sort-status').text('');
+        });
+        
+        $('#search-input').on('keyup', function() {
+            const searchText = $(this).val().toLowerCase();
+            
+            $('#student-table-body .student-row').filter(function() {
+                const lastName = $(this).find('td:eq(0)').text().toLowerCase();
+                const firstName = $(this).find('td:eq(1)').text().toLowerCase();
+                const fullName = lastName + " " + firstName;
+                
+                $(this).toggle(fullName.includes(searchText));
+            });
+        });
+
+        $('#sort-abs-asc').on('click', function() {
+            updateAttendance(); 
+            
+            const $rows = $('#student-table-body .student-row');
+            
+            $rows.sort(function(a, b) {
+                const valA = parseInt($(a).find('.absences-count').text()) || 0;
+                const valB = parseInt($(b).find('.absences-count').text()) || 0;
+                
+                return valA - valB; 
+            });
+            
+            $('#student-table-body').append($rows); 
+            $('#sort-status').text('Currently sorted by absences (ascending).');
+        });
+
+        $('#sort-part-desc').on('click', function() {
+            updateAttendance(); 
+            
+            const $rows = $('#student-table-body .student-row');
+            
+            $rows.sort(function(a, b) {
+                const valA = parseInt($(a).find('.participation-count').text()) || 0;
+                const valB = parseInt($(b).find('.participation-count').text()) || 0;
+                
+                return valB - valA; 
+            });
+            
+            $('#student-table-body').append($rows); 
+            $('#sort-status').text('Currently sorted by participation (descending).');
         });
 
     });
