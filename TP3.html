@@ -465,6 +465,7 @@
                         <input type="text" id="email" name="email">
                         <span class="error-message" id="email-error"></span>
                     </div>
+<<<<<<< HEAD
 
                     <div>
                         <label for="group">Group:</label>
@@ -474,6 +475,8 @@
                             <option value="Group 3">Group 3</option>
                         </select>
                     </div>
+=======
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
                     <button type="submit">Add Student</button>
                 </form>
             </div>
@@ -482,6 +485,7 @@
     </div> 
 
 
+<<<<<<< HEAD
    <script>
     // --- HELPER FUNCTIONS (Global) ---
 
@@ -726,10 +730,236 @@
         // Reports link shows the attendance page and then clicks the report button
         $('#nav-reports').on('click', function(e) { 
             e.preventDefault(); 
+=======
+    <script>
+        function updateAttendance() {
+            const rows = document.querySelectorAll('#student-table-body .student-row');
+
+            rows.forEach(row => {
+                let absenceCount = 0;
+                let participationCount = 0;
+
+                const presenceCheckboxes = row.querySelectorAll('.presence');
+                presenceCheckboxes.forEach(checkbox => {
+                    if (!checkbox.checked) {
+                        absenceCount++;
+                    }
+                });
+
+                const participationCheckboxes = row.querySelectorAll('.participation');
+                participationCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        participationCount++;
+                    }
+                });
+
+                row.querySelector('.absences-count').textContent = `${absenceCount} Abs`;
+                row.querySelector('.participation-count').textContent = `${participationCount} Par`;
+
+                const messageCell = row.querySelector('.message-cell');
+                
+                row.style.backgroundColor = 'transparent'; 
+                messageCell.style.color = '#333';
+
+                if (absenceCount >= 5) {
+                    row.style.backgroundColor = '#fde8e8'; 
+                    messageCell.textContent = 'Excluded – too many absences – You need to participate more';
+                    messageCell.style.color = '#9b1c1c';
+                } else if (absenceCount >= 3) {
+                    row.style.backgroundColor = '#fef9c3'; 
+                    messageCell.textContent = 'Warning – attendance low – You need to participate more';
+                    messageCell.style.color = '#723b13';
+                } else {
+                    row.style.backgroundColor = '#eafaf1'; 
+                    messageCell.textContent = 'Good attendance – Excellent participation';
+                    messageCell.style.color = '#065f46';
+                }
+            });
+        }
+
+        function deleteStudent(button) {
+            const row = button.closest('.student-row');
+            if (row) {
+                if (confirm('Are you sure you want to delete this student?')) {
+                    row.remove();
+                }
+            }
+        }
+        
+        
+        function showReport() {
+            updateAttendance();
+
+            const rows = document.querySelectorAll('#student-table-body .student-row');
+            const totalStudents = rows.length;
+            
+            const totalPresent = document.querySelectorAll('.presence:checked').length;
+            const totalParticipated = document.querySelectorAll('.participation:checked').length;
+            
+            document.getElementById('total-students').textContent = totalStudents;
+            document.getElementById('total-present').textContent = totalPresent;
+            document.getElementById('total-participated').textContent = totalParticipated;
+            
+            document.getElementById('report-section').style.display = 'block';
+
+            drawChart(totalStudents, totalPresent, totalParticipated);
+        }
+
+        function drawChart(students, present, participated) {
+            const maxVal = Math.max(students, present, participated, 1); 
+            
+            const barStudents = document.getElementById('bar-students');
+            const barPresent = document.getElementById('bar-present');
+            const barParticipated = document.getElementById('bar-participated');
+
+            barStudents.style.height = '0%';
+            barPresent.style.height = '0%';
+            barParticipated.style.height = '0%';
+            
+            setTimeout(() => {
+                barStudents.style.height = (students / maxVal) * 90 + '%'; 
+                barStudents.innerText = students;
+                
+                barPresent.style.height = (present / maxVal) * 90 + '%';
+                barPresent.innerText = present;
+
+                barParticipated.style.height = (participated / maxVal) * 90 + '%';
+                barParticipated.innerText = participated;
+            }, 100);
+        }
+
+        
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            document.getElementById('student-form').addEventListener('submit', function(event) {
+                
+                event.preventDefault(); 
+                
+                let isValid = true; 
+
+                const studentId = document.getElementById('student-id').value;
+                const lastName = document.getElementById('last-name').value;
+                const firstName = document.getElementById('first-name').value;
+                const email = document.getElementById('email').value;
+
+                const idError = document.getElementById('id-error');
+                const lastnameError = document.getElementById('lastname-error');
+                const firstnameError = document.getElementById('firstname-error');
+                const emailError = document.getElementById('email-error');
+
+                idError.textContent = '';
+                lastnameError.textContent = '';
+                firstnameError.textContent = '';
+                emailError.textContent = '';
+
+                const numbersOnly = /^[0-9]+$/;
+                const lettersOnly = /^[A-Za-z\s'-]+$/;
+                const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+
+                if (studentId === '') {
+                    idError.textContent = 'Student ID cannot be empty.';
+                    isValid = false;
+                } else if (!numbersOnly.test(studentId)) {
+                    idError.textContent = 'Student ID must contain only numbers.';
+                    isValid = false;
+                }
+
+                if (lastName === '') {
+                    lastnameError.textContent = 'Last Name cannot be empty.';
+                    isValid = false;
+                } else if (!lettersOnly.test(lastName)) {
+                    lastnameError.textContent = 'Last Name must contain only valid letters.';
+                    isValid = false;
+                }
+
+                if (firstName === '') {
+                    firstnameError.textContent = 'First Name cannot be empty.';
+                    isValid = false;
+                } else if (!lettersOnly.test(firstName)) {
+                    firstnameError.textContent = 'First Name must contain only valid letters.';
+                    isValid = false;
+                }
+
+                if (email === '') {
+                    emailError.textContent = 'Email cannot be empty.';
+                    isValid = false;
+                } else if (!emailFormat.test(email)) {
+                    emailError.textContent = 'Email format is invalid (e.g., name@example.com).';
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    
+                    const tableBody = document.getElementById('student-table-body');
+                    const newRow = document.createElement('tr');
+                    newRow.className = 'student-row';
+                    
+                    newRow.innerHTML = `
+                        <td>${lastName}</td>
+                        <td>${firstName}</td>
+                        <td><input type="checkbox" class="presence"></td>
+                        <td><input type="checkbox" class="participation"></td>
+                        <td><input type="checkbox" class="presence"></td>
+                        <td><input type="checkbox" class="participation"></td>
+                        <td><input type="checkbox" class="presence"></td>
+                        <td><input type="checkbox" class="participation"></td>
+                        <td><input type="checkbox" class="presence"></td>
+                        <td><input type="checkbox" class="participation"></td>
+                        <td><input type="checkbox" class="presence"></td>
+                        <td><input type="checkbox" class="participation"></td>
+                        <td><input type="checkbox" class="presence"></td>
+                        <td><input type="checkbox" class="participation"></td>
+                        <td class="absences-count"></td>
+                        <td class="participation-count"></td>
+                        <td class="message-cell"></td>
+                        <td><button class="delete-btn" onclick="deleteStudent(this)">Delete</button></td>
+                    `;
+                    
+                    tableBody.appendChild(newRow);
+                    
+                    alert('Student "' + firstName + ' ' + lastName + '" was added successfully!');
+
+                    document.getElementById('student-form').reset();
+                    
+                } 
+                
+            }); 
+            
+        }); 
+    </script>
+
+    <script>
+    $(document).ready(function() {
+
+        function showPage(pageId) {
+            $('.page-content').hide();
+            $('#' + pageId).show();
+        }
+
+        $('#nav-home').on('click', function(e) {
+            e.preventDefault(); 
+            showPage('page-home');
+        });
+
+        $('#nav-attendance').on('click', function(e) {
+            e.preventDefault();
+            showPage('page-attendance');
+        });
+
+        $('#nav-add-student').on('click', function(e) {
+            e.preventDefault();
+            showPage('page-add-student');
+        });
+
+        $('#nav-reports').on('click', function(e) {
+            e.preventDefault();
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
             showPage('page-attendance'); 
             $('#report-btn').click(); 
         });
 
+<<<<<<< HEAD
         // Initialize on Home
         showPage('page-home');
 
@@ -740,6 +970,11 @@
             updateAttendance();
         });
 
+=======
+        showPage('page-home');
+
+
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
         $('#student-table-body').on('mouseenter', '.student-row', function() {
             $(this).addClass('row-hover');
         }).on('mouseleave', '.student-row', function() {
@@ -747,12 +982,17 @@
         });
 
         $('#student-table-body').on('click', '.student-row', function(e) {
+<<<<<<< HEAD
             // Prevent alert if clicking on a button, input, or link
             if ($(e.target).hasClass('delete-btn') || $(e.target).is('input') || $(e.target).is('button')) {
+=======
+            if ($(e.target).hasClass('delete-btn')) {
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
                 return;
             }
             const lastName = $(this).find('td:eq(0)').text();
             const firstName = $(this).find('td:eq(1)').text();
+<<<<<<< HEAD
             let absences = $(this).find('.absences-count').text() || "Not calculated";
             
             // IMPORTANT: Replace confirm/alert with a custom modal in a professional environment
@@ -770,10 +1010,20 @@
                 // Toggle row visibility based on search match
                 $(this).toggle(fullName.includes(searchText));
             });
+=======
+            
+            let absences = $(this).find('.absences-count').text();
+            if (absences === "") {
+                absences = "Not calculated";
+            }
+            
+            alert(`Student: ${firstName} ${lastName}\nAbsences: ${absences}`);
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
         });
 
         $('#highlight-btn').on('click', function() {
             updateAttendance();
+<<<<<<< HEAD
             // Highlight students with good attendance (less than 3 absences)
             $('#student-table-body .student-row').each(function() {
                 const absenceText = $(this).find('.absences-count').text(); 
@@ -784,23 +1034,58 @@
                         $(this).css('box-shadow', 'none'); 
                         next();
                     });
+=======
+            
+            $('#student-table-body .student-row').each(function() {
+                const absenceText = $(this).find('.absences-count').text(); 
+                const absenceCount = parseInt(absenceText); 
+
+                if (!isNaN(absenceCount) && absenceCount < 3) {
+                    $(this).fadeOut(500).fadeIn(500);
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
                 }
             });
         });
 
         $('#reset-btn').on('click', function() {
+<<<<<<< HEAD
             // Reset UI elements
+=======
+            $('#student-table-body .student-row').each(function() {
+                $(this).css('background-color', '');
+                $(this).find('.message-cell').text('').css('color', '#333');
+                $(this).find('.absences-count').text('');
+                $(this).find('.participation-count').text('');
+            });
+            
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
             $('#report-section').css('display', 'none');
             $('#search-input').val('');
             $('#student-table-body .student-row').show();
             $('#sort-status').text('');
+<<<<<<< HEAD
             
             // Reload students from JSON to revert attendance checkboxes to default (unchecked)
             loadStudents();
+=======
+        });
+        
+        $('#search-input').on('keyup', function() {
+            const searchText = $(this).val().toLowerCase();
+            
+            $('#student-table-body .student-row').filter(function() {
+                const lastName = $(this).find('td:eq(0)').text().toLowerCase();
+                const firstName = $(this).find('td:eq(1)').text().toLowerCase();
+                const fullName = lastName + " " + firstName;
+                
+                $(this).toggle(fullName.includes(searchText));
+            });
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
         });
 
         $('#sort-abs-asc').on('click', function() {
             updateAttendance(); 
+<<<<<<< HEAD
             const $rows = $('#student-table-body .student-row');
             $rows.sort(function(a, b) {
                 // Parse the absence count text (e.g., "3 Abs" -> 3)
@@ -808,12 +1093,25 @@
                 const valB = parseInt($(b).find('.absences-count').text()) || 0;
                 return valA - valB; // Ascending sort
             });
+=======
+            
+            const $rows = $('#student-table-body .student-row');
+            
+            $rows.sort(function(a, b) {
+                const valA = parseInt($(a).find('.absences-count').text()) || 0;
+                const valB = parseInt($(b).find('.absences-count').text()) || 0;
+                
+                return valA - valB; 
+            });
+            
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
             $('#student-table-body').append($rows); 
             $('#sort-status').text('Currently sorted by absences (ascending).');
         });
 
         $('#sort-part-desc').on('click', function() {
             updateAttendance(); 
+<<<<<<< HEAD
             const $rows = $('#student-table-body .student-row');
             $rows.sort(function(a, b) {
                 // Parse the participation count text
@@ -821,13 +1119,31 @@
                 const valB = parseInt($(b).find('.participation-count').text()) || 0;
                 return valB - valA; // Descending sort
             });
+=======
+            
+            const $rows = $('#student-table-body .student-row');
+            
+            $rows.sort(function(a, b) {
+                const valA = parseInt($(a).find('.participation-count').text()) || 0;
+                const valB = parseInt($(b).find('.participation-count').text()) || 0;
+                
+                return valB - valA; 
+            });
+            
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
             $('#student-table-body').append($rows); 
             $('#sort-status').text('Currently sorted by participation (descending).');
         });
 
     });
+<<<<<<< HEAD
 </script>
     
 </body>
 
+=======
+    </script>
+    
+</body>
+>>>>>>> f1167c1d11ec10bd2946cd47bb215cac3b19c357
 </html>
