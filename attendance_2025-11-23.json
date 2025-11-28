@@ -1,0 +1,22 @@
+[
+    {
+        "student_id": "1",
+        "status": "absent"
+    },
+    {
+        "student_id": "2",
+        "status": "present"
+    },
+    {
+        "student_id": "3",
+        "status": "present"
+    },
+    {
+        "student_id": "31532314",
+        "status": "absent"
+    },
+    {
+        "student_id": "31532316",
+        "status": "absent"
+    }
+]

@@ -1,71 +1,55 @@
 <?php
+// add_student.php
 header('Content-Type: application/json');
+require_once 'db_connect.php'; // Include the database connection
 
-$file = 'students.json';
+$pdo = getDBConnection();
 
-/* -------------------- GET : return all students -------------------- */
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-
-    if (file_exists($file)) {
-        $json = file_get_contents($file);
-        echo $json;
-    } else {
-        echo json_encode([]);
-    }
-    exit;
-}
-
-
-/* -------------------- POST : add a new student -------------------- */
+// Check if request is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Collect data
-    $id = $_POST['student-id'] ?? '';
+    // 1. Collect data from HTML form
     $lastName = $_POST['last-name'] ?? '';
     $firstName = $_POST['first-name'] ?? '';
     $email = $_POST['email'] ?? '';
     $group = $_POST['group'] ?? 'Group 1';
 
-    // Validation
-    if (empty($id) || empty($lastName) || empty($firstName)) {
-        echo json_encode(['status' => 'error', 'message' => 'Required fields missing']);
+    // 2. Validation
+    if (empty($lastName) || empty($firstName)) {
+        echo json_encode(['status' => 'error', 'message' => 'Name fields are required']);
         exit;
     }
 
-    // Load existing students
-    if (file_exists($file) && filesize($file) > 0) {
-        $current_data = file_get_contents($file);
-        $array_data = json_decode($current_data, true);
-    } else {
-        $array_data = [];
+    // 3. Combine names (Since your DB has one 'name' column)
+    $fullName = $lastName . ' ' . $firstName;
+
+    try {
+        // 4. Prepare SQL Insert
+        // Note: We do NOT insert 'student_id' here. The database handles it automatically.
+        $stmt = $pdo->prepare("INSERT INTO students (name, email, group_name) VALUES (?, ?, ?)");
+        
+        // 5. Execute
+        $stmt->execute([$fullName, $email, $group]);
+        
+        // 6. Get the ID assigned by the database
+        $newDbId = $pdo->lastInsertId();
+
+        // 7. Return success with the new data
+        $newStudentData = [
+            'student-id' => $newDbId,
+            'last-name' => $lastName,
+            'first-name' => $firstName,
+            'email' => $email,
+            'group' => $group
+        ];
+
+        echo json_encode(['status' => 'success', 'message' => 'Student saved to DB', 'data' => $newStudentData]);
+
+    } catch (PDOException $e) {
+        echo json_encode(['status' => 'error', 'message' => 'SQL Error: ' . $e->getMessage()]);
     }
-
-    if (!is_array($array_data)) {
-        $array_data = [];
-    }
-
-    // Add new student
-    $new_student = [
-        'student-id' => $id,
-        'last-name' => $lastName,
-        'first-name' => $firstName,
-        'email' => $email,
-        'group' => $group
-    ];
-
-    $array_data[] = $new_student;
-
-    // Save (use LOCK_EX to avoid concurrent write issues)
-    $saved = file_put_contents($file, json_encode($array_data, JSON_PRETTY_PRINT), LOCK_EX);
-
-    if ($saved === false) {
-        echo json_encode(['status' => 'error', 'message' => 'Failed to save student to file']);
-        exit;
-    }
-
-    echo json_encode(['status' => 'success', 'message' => 'Student added successfully', 'data' => $new_student]);
     exit;
 }
 
-echo json_encode(['status' => 'error', 'message' => 'Invalid method']);
+echo json_encode(['status' => 'error', 'message' => 'Invalid Request Method']);
 ?>
