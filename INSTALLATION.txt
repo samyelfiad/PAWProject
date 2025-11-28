@@ -1,0 +1,300 @@
+================================================================================
+  ALGIERS UNIVERSITY ATTENDANCE MANAGEMENT SYSTEM
+  Installation Instructions
+================================================================================
+
+SYSTEM REQUIREMENTS:
+- PHP 7.4 or higher
+- MariaDB 5.7 / MySQL 5.7 or higher
+- Apache or Nginx web server
+- Modern web browser
+- 10 MB free disk space
+
+================================================================================
+STEP 1: EXTRACT PROJECT
+================================================================================
+
+Extract the project files to your web server directory:
+- Windows WAMP: C:\wamp64\www\PawProject\
+- Windows XAMPP: C:\xampp\htdocs\PawProject\
+- Linux LAMP: /var/www/html/PawProject/
+- macOS MAMP: /Applications/MAMP/htdocs/PawProject/
+
+================================================================================
+STEP 2: VERIFY WEB SERVER
+================================================================================
+
+Ensure Apache/Nginx is running:
+- WAMP: Start WAMP, ensure all services are green
+- XAMPP: Start Apache and MySQL from Control Panel
+- Terminal: Start your server normally
+
+================================================================================
+STEP 3: INITIALIZE DATABASE
+================================================================================
+
+Method 1 - Web Browser (RECOMMENDED):
+1. Open your browser
+2. Navigate to: http://localhost/PawProject/setup.php
+3. You should see: "Database Setup Complete!"
+4. The default admin account will be created
+
+Method 2 - Command Line:
+1. Open terminal/command prompt
+2. Navigate to: cd C:\wamp64\www\PawProject\
+3. Run: php setup.php
+4. Look for: "Database Setup Complete!"
+
+================================================================================
+STEP 4: VERIFY DATABASE
+================================================================================
+
+Check that database was created:
+1. Open phpMyAdmin: http://localhost/phpmyadmin/
+2. Login (usually no password for root)
+3. Look for database named: "algiers_attendance"
+4. Verify tables exist: users, courses, sessions, attendance, etc.
+
+If not created, check:
+- MySQL/MariaDB is running
+- Port 3306 is accessible
+- Default credentials are used
+
+================================================================================
+STEP 5: LOGIN
+================================================================================
+
+1. Navigate to: http://localhost/PawProject/
+2. You should see the login page
+3. Login with DEFAULT ADMIN ACCOUNT:
+   Email: admin@univ-alger.dz
+   Password: admin123
+
+4. You should be redirected to Admin Dashboard
+5. If redirected to login, check:
+   - Browser cookies are enabled
+   - PHP sessions are working
+   - Database connection successful
+
+================================================================================
+STEP 6: CREATE SAMPLE DATA
+================================================================================
+
+Add Test Professor:
+1. Click "Manage Professors" from Admin Dashboard
+2. Click "Add New Professor"
+3. Fill in:
+   - First Name: Ahmed
+   - Last Name: Benali
+   - Email: ahmed.benali@univ-alger.dz
+   - Password: Prof1234
+4. Click "Add Professor"
+
+Add Test Students:
+1. Click "Student Management" from Admin Dashboard
+2. Click "Add New Student"
+3. Repeat 3 times with:
+   - Student 1: Fatima Zahra (G1)
+   - Student 2: Mohammed Amin (G1)
+   - Student 3: Leila Hassan (G2)
+4. Each needs unique email and password
+
+Create Test Course:
+1. Click "Manage Courses" from Admin Dashboard
+2. Click "New Course"
+3. Fill in:
+   - Course Name: Web Programming
+   - Select Professor: Ahmed Benali
+4. Click "Create"
+
+================================================================================
+STEP 7: TEST FEATURES
+================================================================================
+
+Test as Professor:
+1. Logout from admin account
+2. Login as: ahmed.benali@univ-alger.dz / Prof1234
+3. Click "My Courses"
+4. Click "New Session" on Web Programming
+5. Fill in date, time, select group
+6. Click "Create & Start Attendance"
+7. Mark attendance (Present/Absent/Justified)
+8. Click "Save Changes"
+
+Test as Student:
+1. Logout
+2. Login as: fatima.zahra@univ-alger.dz / Pass1234
+3. Click "My Courses"
+4. Click "View Details" on Web Programming
+5. See your attendance record
+6. If absent, click "Submit" to submit justification
+
+Test as Admin:
+1. Logout and login as admin
+2. Click "Manage Justifications"
+3. Review pending justification from student
+4. Click "Approve" or "Reject"
+
+Test Import/Export:
+1. As admin, go to "Import Students"
+2. Download CSV template
+3. Fill in sample data
+4. Upload CSV
+5. Go to "Export Reports"
+6. Click "Export CSV" to download records
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+PROBLEM: "Connection failed" error
+SOLUTION:
+- Verify MySQL/MariaDB is running
+- Check database credentials in includes/db.php
+- Run setup.php again to recreate database
+
+PROBLEM: Login page loops back to login
+SOLUTION:
+- Clear browser cache and cookies
+- Try private/incognito browser window
+- Check PHP session directory permissions
+
+PROBLEM: Can't upload files
+SOLUTION:
+- Create folder: uploads/justifications/
+- Set permissions: chmod 755 uploads/
+- Ensure file size < 5MB
+
+PROBLEM: Charts not showing on statistics page
+SOLUTION:
+- Check browser console for JavaScript errors
+- Verify Chart.js CDN is accessible
+- Check browser allows third-party scripts
+
+PROBLEM: AJAX attendance saving fails
+SOLUTION:
+- Check browser console for errors
+- Verify database connection working
+- Check ajax_save_attendance.php exists
+
+================================================================================
+POST-SETUP TASKS
+================================================================================
+
+1. SECURITY:
+   - Change default admin password
+   - Set secure credentials for test accounts
+   - Restrict file upload directory
+
+2. BACKUP:
+   - Create database backup: backup_database.php
+   - Store backup file safely
+   - Test restore process
+
+3. TESTING:
+   - Test on mobile devices
+   - Test different browsers
+   - Verify all user roles
+
+4. CUSTOMIZATION:
+   - Update university name/logo
+   - Configure email settings (when ready)
+   - Customize color scheme
+
+5. DEPLOYMENT:
+   - Set proper file permissions
+   - Configure SSL/HTTPS
+   - Set up regular backups
+   - Monitor database size
+
+================================================================================
+QUICK REFERENCE
+================================================================================
+
+Admin Dashboard:
+http://localhost/PawProject/admin_dashboard.php
+
+Professor Dashboard:
+http://localhost/PawProject/prof_dashboard.php
+
+Student Dashboard:
+http://localhost/PawProject/student_dashboard.php
+
+Database Backup:
+http://localhost/PawProject/backup_database.php
+
+Documentation:
+- README.md - Complete documentation
+- SETUP_GUIDE.md - Quick start guide
+- REQUIREMENTS_CHECKLIST.md - Feature verification
+
+================================================================================
+DEFAULT CREDENTIALS
+================================================================================
+
+Admin:
+Email: admin@univ-alger.dz
+Password: admin123
+
+Test Professor:
+Email: ahmed.benali@univ-alger.dz
+Password: Prof1234
+
+Test Students:
+- fatima.zahra@univ-alger.dz / Pass1234
+- mohammed.amin@univ-alger.dz / Pass1234
+- leila.hassan@univ-alger.dz / Pass1234
+
+================================================================================
+DATABASE INFO
+================================================================================
+
+Database Name: algiers_attendance
+Host: localhost
+User: root
+Password: (empty by default)
+Port: 3306
+
+Tables:
+1. users - User accounts
+2. courses - Course information
+3. sessions - Attendance sessions
+4. attendance - Attendance records
+5. justifications - Justification requests
+6. participation - Participation scores
+7. course_enrollments - Course enrollment
+
+================================================================================
+FILE STRUCTURE
+================================================================================
+
+Root Files:
+- index.php (Login page)
+- setup.php (Database initialization)
+- admin_dashboard.php
+- prof_dashboard.php
+- student_dashboard.php
+- admin_statistics.php
+- manage_*.php (User management)
+- import/export files
+- *.md (Documentation)
+
+Include Folder:
+- db.php (Database connection)
+- header.php (Navigation & styling)
+- footer.php (Footer & scripts)
+
+================================================================================
+SUPPORT
+================================================================================
+
+For issues or questions:
+1. Check README.md for comprehensive guide
+2. See SETUP_GUIDE.md for quick start
+3. Review error logs in browser console
+4. Check MySQL/MariaDB error log
+5. Verify all prerequisites are met
+
+Good Luck! 🎓
+
+================================================================================
